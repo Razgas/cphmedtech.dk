@@ -1,0 +1,94 @@
+---
+import PartnerLogo from '../partners/PartnerLogo.astro';
+import cookMedical from '../../assets/logos/cook-medical-logo.webp';
+import geHealthcare from '../../assets/logos/ge-healthcare-logo.webp';
+import ferrosan from '../../assets/logos/ferrosan-medical-devices-logo.svg';
+import novo from '../../assets/logos/novo-logo.png';
+
+const companies = [
+  { name: 'Cook Medical', logoSrc: cookMedical, website: 'https://www.cookmedical.com' },
+  { name: 'GE HealthCare', logoSrc: geHealthcare, website: 'https://www.gehealthcare.dk' },
+  { name: 'Ferrosan Medical Devices', logoSrc: ferrosan, website: 'https://www.ferrosanmedicaldevices.com' },
+  { name: 'Novo', logoSrc: novo, website: 'https://www.novonordisk.com' },
+];
+---
+
+<section class="companies">
+  <div class="companies__inner">
+    <h2>Meet This Year's Companies</h2>
+    <p class="companies__intro">
+      At MedTech Career Day, in collaboration with Medicoindustrien, you can meet representatives from:
+    </p>
+    <div class="companies__grid">
+      {companies.map((company) => (
+        <div class="companies__card">
+          <PartnerLogo
+            name={company.name}
+            logoSrc={company.logoSrc}
+            website={company.website}
+            scale={company.scale}
+            height="3.5rem"
+          />
+          <h3 class="companies__name">{company.name}</h3>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  @use '../../styles/tokens' as *;
+  @use '../../styles/mixins' as *;
+
+  .companies {
+    padding: 4rem 0;
+  }
+
+  .companies__inner {
+    @include container(72rem);
+
+    h2 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .companies__intro {
+    text-align: center;
+    color: $color-muted-fg;
+    max-width: 40rem;
+    margin: 0 auto 2rem;
+  }
+
+  .companies__grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+
+    @include respond-to($bp-md) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .companies__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background-color: $color-card;
+    border: 1px solid $color-border;
+    border-radius: $radius-lg;
+    padding: 1.5rem;
+    transition: $transition-smooth;
+
+    &:hover {
+      box-shadow: $shadow-medium;
+    }
+  }
+
+  .companies__name {
+    font-size: 1rem;
+    text-align: center;
+  }
+</style>
