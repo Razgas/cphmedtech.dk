@@ -21,6 +21,11 @@ const upcoming = allEvents
   .sort((a, b) => new Date(a.data.sortDate).getTime() - new Date(b.data.sortDate).getTime())
   .slice(0, 3);
 
+// Next featured event with its own page, promoted in the hero
+const featuredEvent = allEvents
+  .filter((e) => e.data.isFeatured && e.data.pageUrl && isEventUpcoming(e.data.sortDate))
+  .sort((a, b) => new Date(a.data.sortDate).getTime() - new Date(b.data.sortDate).getTime())[0];
+
 // Blog preview
 const allPosts = await getCollection('blog');
 const latestPosts = allPosts
@@ -53,7 +58,7 @@ const partners = allPartners.sort((a, b) => a.data.sortOrder - b.data.sortOrder)
   </Fragment>
 
   <!-- 1. Hero with animated network banner -->
-  <HeroBanner />
+  <HeroBanner featuredEvent={featuredEvent} />
 
   <!-- 2. Impact stats -->
   <StatsBar />
