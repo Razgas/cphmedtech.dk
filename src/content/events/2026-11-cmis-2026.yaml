@@ -2,7 +2,7 @@ title: "Copenhagen MedTech Innovation Summit 2026"
 date: "November 18th, 2026"
 sortDate: 2026-11-18
 year: 2026
-description: "Our flagship event returns, uniting students, startups, and industry leaders to explore the future of healthcare technology. Featuring MedTech Career Day with Medicoindustrien, Cook Medical, GE HealthCare, Ferrosan Medical Devices and Novo."
+description: "Our annual summit at Panum, opening with MedTech Career Day in collaboration with Medicoindustrien, followed by an evening of talks, dinner and drinks."
 type: summit
 location: "Niels K. Jerne Auditorium, Panum, University of Copenhagen"
 isFeatured: true
@@ -10,3 +10,9 @@ registrationUrl: "https://copenhagenmedtech.ticketbutler.io/en/e/innovation-summ
 time: "15:15 – 20:45"
 price: "35 DKK"
 pageUrl: "/events/cmis-2026/"
+companies:
+  - cook-medical
+  - ge-healthcare
+  - ferrosan-medical-devices
+  - novo-nordisk
+collaborator: medicoindustrien

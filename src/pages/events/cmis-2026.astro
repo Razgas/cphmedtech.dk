@@ -1,25 +1,85 @@
 ---
+import { getEntries, getEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../../components/shared/Button.astro';
-import QuickInfoCards from '../../components/cmis2026/QuickInfoCards.astro';
-import ContentSection from '../../components/cmis2025/ContentSection.astro';
-import CompaniesSection from '../../components/cmis2026/CompaniesSection.astro';
-import ScheduleSection from '../../components/cmis2026/ScheduleSection.astro';
+import Icon from '../../components/shared/Icon.astro';
+import EventPhase from '../../components/shared/EventPhase.astro';
+import ContentSection from '../../components/shared/ContentSection.astro';
+import QuickInfoCards from '../../components/summit/QuickInfoCards.astro';
+import CompaniesSection from '../../components/summit/CompaniesSection.astro';
+import ScheduleSection from '../../components/summit/ScheduleSection.astro';
+import { isEventUpcoming } from '../../utils/event-dates';
 import crowd from '../../assets/images/crowd.jpg';
 import speaker from '../../assets/images/speaker.jpg';
 import speaker2 from '../../assets/images/speaker2.jpg';
 import crowd2 from '../../assets/images/crowd2.jpg';
+
+const event = await getEntry('events', '2026-11-cmis-2026');
+if (!event) throw new Error('Event 2026-11-cmis-2026 is missing from src/content/events/');
+
+const companies = await getEntries(event.data.companies ?? []);
+if (companies.some((company) => !company)) {
+  throw new Error('2026-11-cmis-2026.yaml lists a company that is missing from src/content/partners/');
+}
+const collaborator = event.data.collaborator && (await getEntry(event.data.collaborator));
+if (!collaborator) {
+  throw new Error('2026-11-cmis-2026.yaml needs a collaborator that exists in src/content/partners/');
+}
+const companyNames = new Intl.ListFormat('en-GB', { style: 'long', type: 'conjunction' })
+  .format(companies.map((company) => company.data.name));
+
+const description = `MedTech Career Day with ${companyNames}, followed by an evening of talks, dinner and drinks.`;
+const ticketUrl = event.data.registrationUrl;
+const [priceAmount, priceCurrency] = event.data.price?.split(' ') ?? [];
+const offer = ticketUrl && priceAmount && priceCurrency && isEventUpcoming(event.data.sortDate)
+  ? {
+      "@type": "Offer",
+      "price": priceAmount,
+      "priceCurrency": priceCurrency,
+      "url": ticketUrl,
+      "availability": "https://schema.org/InStock"
+    }
+  : undefined;
+// A 1200px JPEG for search engines; reading crowd.src directly would ship the 2 MB original.
+const ldImage = await getImage({ src: crowd, width: 1200, format: 'jpg' });
+
+const quickInfo = [
+  { icon: 'calendar', title: event.data.date, subtitle: 'Save the date' },
+  { icon: 'map-pin', title: 'Niels K. Jerne Auditorium', subtitle: 'Panum, University of Copenhagen, Blegdamsvej 3B' },
+  { icon: 'clock', title: event.data.time ?? '', subtitle: 'Full afternoon & evening program' },
+];
+
+const schedule = [
+  {
+    title: 'MedTech Career Day',
+    time: '15:15 – 18:30',
+    detail: `With ${collaborator.data.name}, ${companyNames}`,
+    price: 'FREE',
+    free: true,
+    note: 'Open to all students',
+  },
+  {
+    title: 'Innovation Summit',
+    time: '18:30 – 20:45',
+    detail: 'Copenhagen MedTech Innovation Summit talks',
+    price: event.data.price ?? '',
+    note: 'Includes dinner and drinks',
+  },
+];
 ---
 
 <BaseLayout
   title="Copenhagen MedTech Innovation Summit 2026"
-  description="Join us for the Copenhagen MedTech Innovation Summit 2026 on November 18th at the Niels K. Jerne Auditorium, Panum, University of Copenhagen. Featuring inspiring talks, networking with industry leaders, and MedTech Career Day."
+  description={`The Copenhagen MedTech Innovation Summit 2026 is on ${event.data.date} at the Niels K. Jerne Auditorium, Panum, University of Copenhagen. ${description}`}
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "Event",
       "name": "Copenhagen MedTech Innovation Summit 2026",
+      "description": description,
+      "image": [new URL(ldImage.src, Astro.site).href],
       "startDate": "2026-11-18T15:15:00+01:00",
       "endDate": "2026-11-18T20:45:00+01:00",
       "eventStatus": "https://schema.org/EventScheduled",
@@ -39,7 +99,8 @@ import crowd2 from '../../assets/images/crowd2.jpg';
         "@type": "Organization",
         "name": "Copenhagen MedTech",
         "url": "https://cphmedtech.dk"
-      }
+      },
+      "offers": offer
     })} />
   </Fragment>
 
@@ -47,18 +108,33 @@ import crowd2 from '../../assets/images/crowd2.jpg';
     <div class="cmis-hero__inner">
       <h1>Copenhagen MedTech Innovation Summit 2026</h1>
       <p class="cmis-hero__subtitle">
-        Step into the future of healthcare: inspiring talks, networking with industry leaders, and a kickstart to your MedTech career.
+        MedTech Career Day in the afternoon, followed by an evening of talks, dinner and drinks.
       </p>
       <div class="cmis-hero__cta">
-        <Button href="https://copenhagenmedtech.ticketbutler.io/en/e/innovation-summit/" variant="primary" size="lg" premium external>
-          Sign Up Now
-        </Button>
+        {ticketUrl && (
+          <EventPhase date={event.data.sortDate} show="upcoming">
+            <Button href={ticketUrl} variant="primary" size="lg" premium external>
+              Sign Up Now
+            </Button>
+          </EventPhase>
+        )}
+        <EventPhase date={event.data.sortDate} show="past">
+          <p class="cmis-hero__past">This event took place on {event.data.date}.</p>
+          <a href="/events/" class="link-arrow">
+            See upcoming events <Icon name="chevron-right" size={16} />
+          </a>
+        </EventPhase>
       </div>
-      <QuickInfoCards />
+      <QuickInfoCards cards={quickInfo} />
     </div>
   </section>
 
-  <CompaniesSection />
+  <CompaniesSection
+    eyebrow="MedTech Career Day 2026"
+    intro={`Talk directly with representatives from ${companyNames}, and explore your future career in MedTech.`}
+    companies={companies}
+    collaborator={collaborator}
+  />
 
   <ContentSection
     heading="Innovation Summit 2026"
@@ -90,13 +166,13 @@ import crowd2 from '../../assets/images/crowd2.jpg';
 
   <ContentSection
     heading="MedTech Career Day"
-    subtitle="In Collaboration with Medicoindustrien"
+    subtitle={`In Collaboration with ${collaborator.data.name}`}
     imageSrc={speaker2}
     imageAlt="MedTech Career Day session"
   >
     <p>
-      In collaboration with Medicoindustrien and their partners, the event opens with a dedicated
-      MedTech Career Day, featuring Cook Medical, GE HealthCare, Ferrosan Medical Devices and Novo.
+      In collaboration with {collaborator.data.name} and their partners, the event opens with a dedicated
+      MedTech Career Day, featuring {companyNames}.
     </p>
     <p>
       This segment gives students valuable opportunities to engage directly with industry representatives
@@ -119,12 +195,21 @@ import crowd2 from '../../assets/images/crowd2.jpg';
     </p>
   </ContentSection>
 
-  <ScheduleSection />
+  <ScheduleSection
+    items={schedule}
+    disclaimer="Participation in MedTech Career Day is free, but a ticket is required for the Innovation Summit. The fee ensures attendance commitment."
+    eventDate={event.data.sortDate}
+    ticketUrl={ticketUrl}
+  />
 
   <section class="cmis-footer">
     <p>
       You can find the event on LinkedIn
       <a href="https://www.linkedin.com/company/cph-medtech/posts/" target="_blank" rel="noopener noreferrer" class="link-elegant">here</a>.
+    </p>
+    <p>
+      Curious about last year?
+      <a href="/events/cmis-2025/" class="link-elegant">See CMIS 2025</a>.
     </p>
   </section>
 </BaseLayout>
@@ -164,6 +249,11 @@ import crowd2 from '../../assets/images/crowd2.jpg';
     }
   }
 
+  .cmis-hero__past {
+    color: $color-muted-fg;
+    margin-bottom: 0.75rem;
+  }
+
   .cmis-footer {
     padding: 3rem 0;
     text-align: center;
@@ -171,6 +261,10 @@ import crowd2 from '../../assets/images/crowd2.jpg';
 
     p {
       color: $color-muted-fg;
+    }
+
+    p + p {
+      margin-top: 0.5rem;
     }
   }
 </style>

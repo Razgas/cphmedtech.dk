@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, reference } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 const events = defineCollection({
@@ -20,6 +21,8 @@ const events = defineCollection({
     capacity: z.number().optional(),
     price: z.string().optional(),
     pageUrl: z.string().optional(),
+    companies: z.array(reference('partners')).optional(),
+    collaborator: reference('partners').optional(),
   }),
 });
 
