@@ -9,8 +9,10 @@ The official website for Copenhagen MedTech, a student organisation connecting s
 - [Astro](https://astro.build) v6 - static site generator
 - SCSS with BEM naming conventions
 - MDX for blog content
-- Cloudflare Pages for hosting
+- Cloudflare for hosting (Workers Builds, static assets from `dist/`)
 - GitHub Actions CI (lint, type check, build)
+
+Contributing, by hand or with an AI agent? Read [AGENTS.md](AGENTS.md) first.
 
 ## Getting Started
 
@@ -55,6 +57,7 @@ registrationUrl: "https://..."
 time: "15:00 - 21:00"
 price: "Free"
 pageUrl: "/events/event-page/"  # optional, the timeline links to it
+isFeatured: true  # optional, promotes the event in the home page hero (needs pageUrl)
 ```
 
 Events whose `sortDate` is today or later appear under Upcoming Events on the homepage and /events/ automatically. Once the date passes, sign-up buttons on event pages switch to a "took place" note, even before the next deploy.
