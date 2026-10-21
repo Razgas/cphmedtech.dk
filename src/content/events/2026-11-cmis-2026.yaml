@@ -6,7 +6,6 @@ description: "Our flagship event returns, uniting students, startups, and indust
 type: summit
 location: "Niels K. Jerne Auditorium, Panum, University of Copenhagen"
 isFeatured: true
-isUpcoming: true
 registrationUrl: "https://copenhagenmedtech.ticketbutler.io/en/e/innovation-summit/"
 time: "15:15 – 20:45"
 price: "35 DKK"

@@ -12,7 +12,6 @@ const events = defineCollection({
     type: z.enum(['summit', 'hackathon', 'lecture', 'case-event', 'workshop', 'other']),
     location: z.string().optional(),
     isFeatured: z.boolean().default(false),
-    isUpcoming: z.boolean().default(false),
     externalUrl: z.string().url().optional(),
     registrationUrl: z.string().url().optional(),
     image: z.string().optional(),

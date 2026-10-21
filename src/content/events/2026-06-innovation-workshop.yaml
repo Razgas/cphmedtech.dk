@@ -6,7 +6,6 @@ description: "A full-day workshop at Rigshospitalet exploring innovation, medica
 type: workshop
 location: "Rigshospitalet"
 isFeatured: false
-isUpcoming: false
 registrationUrl: "https://docs.google.com/forms/d/1wqoKElN6TLdvfi8SFJGzZQmT0FxiASGRZBPMcdjouQY/viewform"
 time: "Full day"
 price: "Free"
