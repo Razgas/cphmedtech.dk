@@ -12,6 +12,7 @@ import PartnerLogo from '../components/partners/PartnerLogo.astro';
 import { Image } from 'astro:assets';
 import crowdImg from '../assets/images/crowd.jpg';
 import { isEventUpcoming } from '../utils/event-dates';
+import { getLogoSrc } from '../utils/logos';
 
 // Upcoming events
 const allEvents = await getCollection('events');
@@ -29,12 +30,6 @@ const latestPosts = allPosts
 // Partners
 const allPartners = await getCollection('partners');
 const partners = allPartners.sort((a, b) => a.data.sortOrder - b.data.sortOrder);
-const logoModules = import.meta.glob<{ default: ImageMetadata }>('../assets/logos/*', { eager: true });
-
-function getLogoSrc(filename: string): ImageMetadata | undefined {
-  const key = Object.keys(logoModules).find((k) => k.endsWith(`/${filename}`));
-  return key ? logoModules[key].default : undefined;
-}
 ---
 
 <BaseLayout
